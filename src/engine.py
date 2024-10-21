@@ -2,9 +2,11 @@ import logging.config
 import selectors
 import sys
 from queue import Queue, Empty
-import chess
 from concurrent.futures import ThreadPoolExecutor
 
+import chess
+
+import commands
 
 EXIT_GAME = False
 
@@ -68,6 +70,7 @@ def consume_input(queue: Queue, board: chess.Board, idx: int) -> None:
         try:
             line = queue.get(timeout=1)
             logging.debug(f"consumer line: {line}")
+
             if line == "exit":
                 EXIT_GAME = True
 
@@ -86,19 +89,30 @@ def process_command(line: str, board: chess.Board) -> None:
         line: the command to process
         board: the chess board
     """
-    send_command(line)
-    print(board)
-        
-def send_command(command: str) -> None:
-    """
-    Send the given command to the engine.
+    logging.debug(f"command received: {line}")
+    command_args = line.strip().split(" ")
 
-    Args:
-        command: the command to send
-    """
-    logging.debug(f"command sent: {command}")
-    sys.stdout.write(command + "\n")
-    sys.stdout.flush()
+    command = command_args[0]
+
+    if command == "uci":
+        commands.uci()
+    elif command == "isready":
+        commands.isready(command_args)
+    elif command == "ucinewgame":
+        commands.ucinewgame(board)
+    elif command == "position":
+        commands.position(command_args, board)
+    elif command == "go":
+        commands.go(command_args, board)
+    elif command == "quit":
+        commands.quit()
+    else:
+        logging.error(f"unknown command: {command}")
+
+def quit():
+    """Quit the game."""
+    global EXIT_GAME
+    EXIT_GAME = True
 
 def main():
     queue = Queue()
