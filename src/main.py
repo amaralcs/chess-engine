@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import logging.config
 import random
 import selectors
@@ -40,9 +42,7 @@ def produce_input(queue: Queue) -> None:
     selector.register(fileobj=sys.stdin, events=selectors.EVENT_READ, data=read_input)
 
     while not EXIT_GAME:
-        logging.debug(f"producer exit game: {EXIT_GAME}")
-        
-        for key, events in selector.select(timeout=10):
+        for key, events in selector.select(timeout=1):
             callback = key.data # function to read input
             line = callback(sys.stdin, events)
             if line:
@@ -55,7 +55,7 @@ def produce_input(queue: Queue) -> None:
 
 def consume_input(queue: Queue, board: chess.Board, idx: int) -> None:
     """
-    Consume input from the given queue and process the commands.
+    Consume input from the given queue and process the 
 
     Args:
         queue: queue to consume from
@@ -67,7 +67,7 @@ def consume_input(queue: Queue, board: chess.Board, idx: int) -> None:
     while not EXIT_GAME:
         logging.debug(f"consumer {idx} exit game: {EXIT_GAME}")
         try:
-            line = queue.get(timeout=10)
+            line = queue.get(timeout=1)
             logging.debug(f"consumer {idx} line: {line}")
 
             if line == "exit":
@@ -94,17 +94,17 @@ def process_command(line: str, board: chess.Board) -> None:
     command = command_args[0]
 
     if command == "uci":
-        commands.uci()
+        uci()
     elif command == "isready":
-        commands.isready(command_args)
+        isready(command_args)
     elif command == "ucinewgame":
-        commands.ucinewgame(board)
+        ucinewgame(board)
     elif command == "position":
-        commands.position(command_args, board)
+        position(command_args, board)
     elif command == "go":
-        commands.go(command_args, board)
+        go(command_args, board)
     elif command == "quit":
-        commands.quit()
+        quit()
     else:
         logging.error(f"unknown command: {command}")
 
