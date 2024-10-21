@@ -65,7 +65,6 @@ def consume_input(queue: Queue, board: chess.Board, idx: int) -> None:
     """
     global EXIT_GAME
     while not EXIT_GAME:
-        logging.debug(f"consumer {idx} exit game: {EXIT_GAME}")
         try:
             line = queue.get(timeout=1)
             logging.debug(f"consumer {idx} line: {line}")
