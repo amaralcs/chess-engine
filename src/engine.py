@@ -43,7 +43,7 @@ def produce_input(queue: Queue) -> None:
     while not EXIT_GAME:
         logging.debug(f"producer exit game: {EXIT_GAME}")
         
-        for key, events in selector.select(timeout=1):
+        for key, events in selector.select(timeout=10):
             callback = key.data # function to read input
             line = callback(sys.stdin, events)
             if line:
@@ -68,15 +68,15 @@ def consume_input(queue: Queue, board: chess.Board, idx: int) -> None:
     while not EXIT_GAME:
         logging.debug(f"consumer {idx} exit game: {EXIT_GAME}")
         try:
-            line = queue.get(timeout=1)
-            logging.debug(f"consumer line: {line}")
+            line = queue.get(timeout=10)
+            logging.debug(f"consumer {idx} line: {line}")
 
             if line == "exit":
                 EXIT_GAME = True
 
             process_command(line, board)
         except Empty:
-            logging.info(f"consumer {idx}: queue empty")
+            logging.debug(f"consumer {idx}: queue empty")
         except Exception as e:
             raise e
     logging.debug(f"consumer {idx} done")
