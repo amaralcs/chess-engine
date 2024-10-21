@@ -1,7 +1,7 @@
 import logging.config
 import selectors
 import sys
-from queue import Queue
+from queue import Queue, Empty
 import chess
 from concurrent.futures import ThreadPoolExecutor
 
@@ -72,8 +72,10 @@ def consume_input(queue: Queue, board: chess.Board, idx: int) -> None:
                 EXIT_GAME = True
 
             process_command(line, board)
-        except queue.Empty:
-            logging.debug(f"consumer {idx}: queue empty")
+        except Empty:
+            logging.info(f"consumer {idx}: queue empty")
+        except Exception as e:
+            raise e
     logging.debug(f"consumer {idx} done")
 
 def process_command(line: str, board: chess.Board) -> None:
