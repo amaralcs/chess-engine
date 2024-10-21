@@ -7,8 +7,6 @@ from concurrent.futures import ThreadPoolExecutor
 
 import chess
 
-import commands
-
 EXIT_GAME = False
 
 logging.config.fileConfig(fname="logging.conf")
